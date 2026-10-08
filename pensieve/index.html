@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pensieve: see your codebase as a map and know who to ask</title>
+<meta name="description" content="Pensieve is a free, open-source app that maps your git repos and AI coding sessions in 3D on your own machine, and shows who knows each part of the code. One-line install.">
+<link rel="canonical" href="https://tedhaley.ca/pensieve/">
+<meta name="author" content="Ted Haley">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pensieve">
+<meta property="og:title" content="Pensieve: see your codebase as a map and know who to ask">
+<meta property="og:description" content="A local, open-source map of your codebases and AI coding sessions, with who knows each part of the code. One-line install.">
+<meta property="og:url" content="https://tedhaley.ca/pensieve/">
+<meta property="og:image" content="https://tedhaley.ca/pensieve/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Pensieve: a 3D map of code areas such as billing, auth and the data pipeline">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pensieve: see your codebase as a map and know who to ask">
+<meta name="twitter:description" content="Local, open-source map of your codebases and AI coding sessions, with who knows what. One-line install.">
+<meta name="twitter:image" content="https://tedhaley.ca/pensieve/og.png">
+<meta name="theme-color" content="#121211">
+<link rel="icon" href="/favicon.ico">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Pensieve",
+  "url": "https://tedhaley.ca/pensieve/",
+  "description": "A local, open-source app that maps your git repositories and AI coding sessions (Claude Code, Codex, Qwen Code) in 3D, finds conceptually overlapping code, and shows who knows each part of the codebase from git history.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "macOS, Linux",
+  "softwareVersion": "0.1.0",
+  "license": "https://opensource.org/licenses/MIT",
+  "isAccessibleForFree": true,
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "downloadUrl": "https://github.com/TedHaley/pensieve",
+  "codeRepository": "https://github.com/TedHaley/pensieve",
+  "image": "https://tedhaley.ca/pensieve/og.png",
+  "author": {"@type": "Person", "name": "Ted Haley", "url": "https://tedhaley.ca/"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Does Pensieve send my code anywhere?",
+     "acceptedAnswer": {"@type": "Answer", "text": "No. Pensieve runs on your machine. Code and transcripts are embedded with a local model and stored in ~/.pensieve. The optional chat model also runs locally, through LM Studio or any OpenAI-compatible server you choose."}},
+    {"@type": "Question", "name": "Can I use Pensieve on a codebase without AI coding sessions?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes. Run pensieve --repos ~/code to index every git repo under a folder. You get the codebase map, code owners, who-knows-what, overlapping areas and team activity. Sessions add your own history on top."}},
+    {"@type": "Question", "name": "How does Pensieve decide who knows an area of the code?",
+     "acceptedAnswer": {"@type": "Answer", "text": "It finds the code most relevant to your question with semantic search, then ranks people by how much of that code they wrote (git blame), alongside their recent commits in the area."}},
+    {"@type": "Question", "name": "Which AI coding agents does Pensieve support?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Claude Code, Codex and Qwen Code transcripts are read automatically from their default folders. Other agents can be added with a small parser."}},
+    {"@type": "Question", "name": "Do I need a GPU?",
+     "acceptedAnswer": {"@type": "Answer", "text": "No. Pensieve uses Apple Silicon (MPS) or CUDA when available and falls back to CPU, which is slower but works."}}
+  ]
+}
+</script>
+<style>
+:root{
+  --bg:#121211;--surface:#1a1a19;--surface-2:#222220;--line:#2e2e2b;--line-2:#3d3d39;
+  --text:#f4f3ee;--text-2:#c9c8c2;--text-3:#8d8c86;--accent:#3987e5;--accent-2:#86b6ef;--good:#199e70;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#fcfcfb;--surface:#ffffff;--surface-2:#f3f2ee;--line:#e6e5e0;--line-2:#d4d3cd;
+    --text:#151514;--text-2:#45443f;--text-3:#76756f;--accent:#2a78d6;--accent-2:#1c5cab;--good:#008300;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans);overflow-x:hidden}
+a{color:var(--accent-2)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+nav .brand{display:flex;gap:10px;align-items:center;font-weight:650;color:var(--text);text-decoration:none;font-size:17px}
+nav .links{display:flex;gap:18px;font-size:14px}
+nav .links a{color:var(--text-2);text-decoration:none}
+nav .links a:hover{color:var(--text)}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center;padding:28px 0 40px}
+h1{font-size:clamp(34px,5vw,54px);line-height:1.08;letter-spacing:-.025em;margin:0 0 18px;font-weight:700}
+.lede{font-size:18.5px;color:var(--text-2);margin:0 0 26px;max-width:36em}
+#cloud{width:100%;aspect-ratio:1/1;max-height:480px;display:block}
+.install{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;background:none;border:0;color:var(--text-3);font:500 14px var(--sans);padding:11px 12px;cursor:pointer;border-bottom:2px solid transparent}
+.tabs button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent)}
+.pane{padding:14px 14px 12px}
+.pane[hidden]{display:none}
+.cmd{display:flex;gap:10px;align-items:flex-start;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.cmd code{flex:1;font:14px/1.55 var(--mono);color:var(--accent-2);white-space:pre-wrap;word-break:break-word}
+.cmd .p{color:var(--text-3);user-select:none}
+.copy{flex:none;background:var(--surface-2);color:var(--text);border:1px solid var(--line-2);border-radius:7px;font:500 12.5px var(--sans);padding:5px 10px;cursor:pointer}
+.copy:hover{border-color:var(--text-3)}
+.note{font-size:13px;color:var(--text-3);margin:9px 2px 0}
+.prompt{font:13.5px/1.55 var(--mono);color:var(--text-2)}
+.cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:9px;padding:9px 14px;font:550 14px var(--sans);text-decoration:none;border:1px solid var(--line-2);color:var(--text)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+section{padding:46px 0;border-top:1px solid var(--line)}
+h2{font-size:28px;letter-spacing:-.015em;margin:0 0 8px;line-height:1.2}
+.sub{color:var(--text-2);margin:0 0 26px;max-width:44em}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card h3{font-size:16px;margin:0 0 6px;display:flex;gap:9px;align-items:center}
+.card p{margin:0;color:var(--text-2);font-size:14.5px}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:0;margin:0;list-style:none}
+.steps li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.steps li::before{content:counter(s);display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line-2);font-weight:650;font-size:13px;margin-bottom:8px}
+.steps b{display:block;margin-bottom:4px}
+.steps p{margin:0;color:var(--text-2);font-size:14.5px}
+code.i{font:13.5px var(--mono);background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+ul.check{list-style:none;padding:0;margin:0}
+ul.check li{padding:6px 0 6px 26px;position:relative;color:var(--text-2)}
+ul.check li::before{content:"";position:absolute;left:2px;top:14px;width:12px;height:6px;border:2px solid var(--good);border-top:0;border-right:0;transform:rotate(-45deg)}
+details{border-bottom:1px solid var(--line);padding:14px 0}
+details summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+details summary::after{content:"+";color:var(--text-3);font-weight:400}
+details[open] summary::after{content:"−"}
+details p{margin:8px 0 0;color:var(--text-2)}
+footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--text-3);font-size:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--text-2)}
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;padding-top:8px}
+  #cloud{max-height:300px;order:-1}
+  .grid,.steps,.two{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="/pensieve/"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="9" cy="10" r="1.6" fill="currentColor"/><circle cx="15" cy="9" r="1.2" fill="currentColor"/><circle cx="13" cy="15" r="1.9" fill="currentColor"/></svg>Pensieve</a>
+    <div class="links"><a href="#features">Features</a><a href="#faq">FAQ</a><a href="https://github.com/TedHaley/pensieve">GitHub</a></div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <h1>See your codebase as a map. Know who to ask about any part of it.</h1>
+      <p class="lede">Pensieve is a free, open-source app that runs on your machine. It reads your git repos and your AI coding sessions, lays them out as an interactive 3D map, and tells you who knows each area, what they've shipped recently, and where teams are solving the same problem twice.</p>
+      <div class="install" id="install">
+        <div class="tabs" role="tablist">
+          <button role="tab" aria-selected="true" aria-controls="p-term" id="t-term">Terminal</button>
+          <button role="tab" aria-selected="false" aria-controls="p-agent" id="t-agent">Ask your coding agent</button>
+        </div>
+        <div class="pane" id="p-term" role="tabpanel" aria-labelledby="t-term">
+          <div class="cmd"><code><span class="p">$ </span>curl -fsSL https://tedhaley.ca/pensieve/install.sh | sh</code><button class="copy" data-copy="curl -fsSL https://tedhaley.ca/pensieve/install.sh | sh">Copy</button></div>
+          <p class="note">macOS and Linux. Installs <a href="https://docs.astral.sh/uv/">uv</a> if needed, installs Pensieve, and opens it at localhost:8765. Already have uv? <code class="i">uv tool install git+https://github.com/TedHaley/pensieve</code></p>
+        </div>
+        <div class="pane" id="p-agent" role="tabpanel" aria-labelledby="t-agent" hidden>
+          <div class="cmd"><code class="prompt" id="agent-prompt">Install and start Pensieve for me (https://tedhaley.ca/pensieve). Run: PENSIEVE_NO_START=1 sh -c "$(curl -fsSL https://tedhaley.ca/pensieve/install.sh)". Then start `pensieve --repos &lt;the folder where I keep my code&gt;` in the background (ask me for the folder if you don't know it) and confirm http://localhost:8765 responds. If nothing answers at http://localhost:1234/v1, tell me that installing LM Studio with a chat model like qwen/qwen3.5-9b enables summaries, insights and chat.</code><button class="copy" data-copy-from="agent-prompt">Copy</button></div>
+          <p class="note">Paste into Claude Code, Codex, Cursor or any agent with shell access. It installs Pensieve, points it at your code, and starts it.</p>
+        </div>
+      </div>
+      <div class="cta"><a class="btn" href="https://github.com/TedHaley/pensieve">★ View on GitHub</a><a class="btn" href="#how">How it works</a></div>
+    </div>
+    <canvas id="cloud" aria-label="Animated illustration of a 3D map of code areas" role="img"></canvas>
+  </header>
+</div>
+
+<section id="features"><div class="wrap">
+  <h2>Understand a whole codebase in your first ten minutes</h2>
+  <p class="sub">Point Pensieve at your repos and it builds a map from the code and the git history you already have. Nothing to configure and no account.</p>
+  <div class="grid">
+    <div class="card"><h3><i class="dot" style="background:#3987e5"></i>A map of every repo</h3><p>Every chunk of code is embedded and laid out in 3D, so related code sits together, even across repos. Browse it as a folder tree with owners, or open any area to see its files.</p></div>
+    <div class="card"><h3><i class="dot" style="background:#d95926"></i>Who knows about X?</h3><p>Ask about any concept, like "billing retries" or "auth tokens". Pensieve finds the relevant code and ranks the people who wrote it, using git blame and recent commits.</p></div>
+    <div class="card"><h3><i class="dot" style="background:#199e70"></i>Teams solving the same problem</h3><p>Overlaps finds folders, within or across repos, whose code does similar things but has different owners. These are likely duplicated work, or people who should talk.</p></div>
+    <div class="card"><h3><i class="dot" style="background:#c98500"></i>What teammates are shipping</h3><p>For each person: commits over the last 90 days, the areas they work in, and a plain-English summary of what they've been building.</p></div>
+    <div class="card"><h3><i class="dot" style="background:#d55181"></i>Where to look next</h3><p>Pensieve shows which parts of the code your work has touched, and ranks the nearby areas you haven't explored, with who to talk to about each one.</p></div>
+    <div class="card"><h3><i class="dot" style="background:#9085e9"></i>Your AI sessions, remembered</h3><p>Every Claude Code, Codex and Qwen Code session becomes a searchable point on the map, with summaries, topics, the commits it produced, and chat that cites its sources.</p></div>
+  </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <h2>How it works</h2>
+  <p class="sub">One command installs it. The first run downloads a small embedding model and indexes in the background. The map fills in as it goes.</p>
+  <ol class="steps">
+    <li><b>Install</b><p>Run the one-liner, or paste the prompt into your coding agent. Pensieve installs as a command-line tool with <code class="i">uv</code>.</p></li>
+    <li><b>Index</b><p>It reads the repos your agent sessions ran in, plus any you add with <code class="i">pensieve --repos ~/code</code>. Code, blame and history are indexed locally into <code class="i">~/.pensieve</code>.</p></li>
+    <li><b>Explore</b><p>Open <code class="i">localhost:8765</code>. Browse the map, ask who knows what, and see who to reach out to. Press <code class="i">⌘K</code> to search everything.</p></li>
+  </ol>
+</div></section>
+
+<section><div class="wrap two">
+  <div>
+    <h2>Private by design</h2>
+    <p class="sub" style="margin-bottom:14px">Your code never leaves your machine.</p>
+    <ul class="check">
+      <li>Embeddings run locally (Qwen3-Embedding-0.6B)</li>
+      <li>Chat and summaries use a local model via LM Studio, or any OpenAI-compatible server you choose</li>
+      <li>Session transcripts are read, never modified</li>
+      <li>Delete <code class="i">~/.pensieve</code> to remove everything</li>
+    </ul>
+  </div>
+  <div>
+    <h2>Requirements</h2>
+    <p class="sub" style="margin-bottom:14px">Works on a typical laptop.</p>
+    <ul class="check">
+      <li>macOS or Linux, with git</li>
+      <li>About 2 GB of disk for the embedding model and index</li>
+      <li>Apple Silicon or CUDA if available; CPU works too</li>
+      <li>Optional: <a href="https://lmstudio.ai">LM Studio</a> with a chat model (qwen3.5-9b recommended) for summaries, insights and chat</li>
+    </ul>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <h2>FAQ</h2>
+  <details><summary>Does Pensieve send my code anywhere?</summary><p>No. Everything runs on your machine. Code and transcripts are embedded with a local model and stored in <code class="i">~/.pensieve</code>. The optional chat model runs locally too.</p></details>
+  <details><summary>Can I use it on a codebase without any AI coding sessions?</summary><p>Yes. Run <code class="i">pensieve --repos ~/code</code> to index every git repo under a folder. You get the codebase map, owners, who-knows-what, overlaps and team activity. Sessions add your own history on top.</p></details>
+  <details><summary>How does it decide who knows an area?</summary><p>It finds the code most relevant to your question with semantic search, then ranks people by how much of that code they wrote (git blame), alongside their recent commits in the area.</p></details>
+  <details><summary>Which agents are supported?</summary><p>Claude Code, Codex and Qwen Code transcripts are picked up automatically from their default folders. Other agents need a small parser; see the <a href="https://github.com/TedHaley/pensieve">README</a>.</p></details>
+  <details><summary>Do I need a GPU?</summary><p>No. Pensieve uses Apple Silicon or CUDA when it can and falls back to CPU, which is slower but works.</p></details>
+  <details><summary>How do I update or uninstall it?</summary><p>Update: <code class="i">uv tool upgrade pensieve</code>. Uninstall: <code class="i">uv tool uninstall pensieve &amp;&amp; rm -rf ~/.pensieve</code>.</p></details>
+</div></section>
+
+<div class="wrap"><footer><span>Pensieve is open source (MIT), made by <a href="/">Ted Haley</a>.</span><span><a href="https://github.com/TedHaley/pensieve">GitHub</a> · <a href="https://github.com/TedHaley/pensieve/issues">Report an issue</a></span></footer></div>
+
+<script>
+// tabs + copy
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.tabs button').forEach(x => { const on = x === b; x.setAttribute('aria-selected', on); document.getElementById(x.getAttribute('aria-controls')).hidden = !on; });
+}));
+document.querySelectorAll('.copy').forEach(b => b.addEventListener('click', async () => {
+  const text = b.dataset.copy || document.getElementById(b.dataset.copyFrom).textContent;
+  try { await navigator.clipboard.writeText(text); b.textContent = 'Copied'; } catch { b.textContent = 'Select & copy'; }
+  setTimeout(() => (b.textContent = 'Copy'), 1600);
+}));
+
+// decorative rotating point cloud: six labelled clusters of code
+(function () {
+  const cv = document.getElementById('cloud'), ctx = cv.getContext('2d');
+  const cols = ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181', '#9085e9'];
+  const names = ['billing', 'auth', 'pipeline', 'search', 'infra', 'web app'];
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const gauss = () => Math.sqrt(-2 * Math.log(rnd() + 1e-9)) * Math.cos(6.2832 * rnd());
+  const centers = cols.map((_, i) => { const a = i / cols.length * 6.2832; return [Math.cos(a) * .62, (rnd() - .5) * .7, Math.sin(a) * .62]; });
+  const pts = [];
+  centers.forEach((c, k) => { for (let i = 0; i < 260; i++) pts.push([c[0] + gauss() * .14, c[1] + gauss() * .14, c[2] + gauss() * .14, k]); });
+  for (let i = 0; i < 60; i++) { const k = Math.floor(rnd() * 6), j = (k + 1) % 6, t = rnd(); pts.push([centers[k][0] * (1 - t) + centers[j][0] * t, centers[k][1] * (1 - t) + centers[j][1] * t, centers[k][2] * (1 - t) + centers[j][2] * t, k]); }
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const dark = () => !matchMedia('(prefers-color-scheme: light)').matches;
+  let W = 0, H = 0, dpr = 1;
+  function size() { dpr = Math.min(2, devicePixelRatio || 1); const r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; }
+  new ResizeObserver(size).observe(cv); size();
+  let ang = .6;
+  function draw() {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    const s = Math.min(W, H) * .52, cx = W / 2, cy = H / 2, ca = Math.cos(ang), sa = Math.sin(ang), tilt = .35, ct = Math.cos(tilt), st = Math.sin(tilt);
+    const proj = p => { const x = p[0] * ca - p[2] * sa, z0 = p[0] * sa + p[2] * ca, y = p[1] * ct - z0 * st, z = p[1] * st + z0 * ct, f = 2.6 / (2.6 + z); return [cx + x * s * f, cy + y * s * f, z, f]; };
+    const P = pts.map(p => [...proj(p), p[3]]).sort((a, b) => b[2] - a[2]);
+    for (const [x, y, z, f, k] of P) { ctx.globalAlpha = .35 + (1 - (z + 1) / 2) * .6; ctx.fillStyle = cols[k]; ctx.beginPath(); ctx.arc(x, y, 2.1 * f, 0, 6.2832); ctx.fill(); }
+    ctx.globalAlpha = 1; ctx.font = '12px ui-monospace, Menlo, monospace';
+    centers.forEach((c, k) => {
+      const [x, y] = proj(c), w = ctx.measureText(names[k]).width + 24;
+      ctx.fillStyle = dark() ? 'rgba(26,26,25,.85)' : 'rgba(255,255,255,.9)'; ctx.strokeStyle = dark() ? '#3d3d39' : '#d4d3cd';
+      ctx.beginPath(); ctx.roundRect(x - w / 2, y - 11, w, 22, 6); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = cols[k]; ctx.beginPath(); ctx.arc(x - w / 2 + 9, y, 3.5, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = dark() ? '#f4f3ee' : '#151514'; ctx.fillText(names[k], x - w / 2 + 17, y + 4);
+    });
+    if (!reduce) { ang += .0025; requestAnimationFrame(draw); }
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
