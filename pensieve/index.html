@@ -32,8 +32,8 @@
  "name": "Pensieve",
  "applicationCategory": "DeveloperApplication",
  "operatingSystem": "macOS 14 or later (Apple Silicon)",
- "softwareVersion": "0.5.5",
- "description": "Local search across your files, git repositories and AI agent sessions, by meaning or exact words. An MCP server that helps coding agents find the right code in fewer tool calls: in benchmarks, more tasks solved with 10% fewer tool calls and 9% lower cost per lookup. Code ownership from git blame, and knowledge gaps where the people who wrote the code are no longer active.",
+ "softwareVersion": "0.5.6",
+ "description": "Local search across your files, git repositories and AI agent sessions, by meaning or exact words. An MCP server that helps coding agents find the right code in fewer tool calls: in benchmarks, more tasks solved with 43% fewer tool calls and 18% lower cost per lookup than grep. Code ownership from git blame, and knowledge gaps where the people who wrote the code are no longer active.",
  "featureList": [
   "Local semantic and exact search over files, folders, git repositories and AI agent sessions",
   "Spotlight-style search panel on Control+Shift",
@@ -60,7 +60,7 @@
   "name": "Ted Haley",
   "url": "https://tedhaley.ca"
  },
- "dateModified": "2026-10-09",
+ "dateModified": "2026-10-11",
  "screenshot": "https://tedhaley.ca/pensieve/og.png",
  "keywords": "semantic code search, MCP server, Claude Code, Codex, AI coding agents, git blame, knowledge gaps"
 }
@@ -83,7 +83,7 @@
    "name": "How does Pensieve help my agent?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Without it, a coding agent often greps the repo and reads many whole files to find what matters, and every file it reads costs tokens. With Pensieve connected over MCP, the agent asks one question and gets back the most relevant passages with their file and line, so it starts on the right code in fewer tool calls. In our benchmark that made each lookup about 9% cheaper overall; see the measured results above."
+    "text": "Without it, a coding agent often greps the repo and reads many whole files to find what matters, and every file it reads costs tokens. With Pensieve connected over MCP, the agent asks one question and gets back the most relevant passages with their file and line, so it starts on the right code in fewer tool calls. In our benchmark that made each lookup 18% cheaper and 21% faster; see the measured results above."
    }
   },
   {
@@ -91,7 +91,7 @@
    "name": "Does Pensieve make Claude Code cheaper?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "In our benchmark, Claude Code with Pensieve solved 66 of 72 code-finding tasks against 62 with grep alone, with 10% fewer tool calls. Each lookup cost 9–11% less in repos from 1,500 to 33,000 files, and 5% more in a 483-file repo. The benchmark scripts are open source, so you can run them on your own code."
+    "text": "In our benchmark, Claude Code with Pensieve found the right file in 131 of 144 runs, against 123 with grep alone, with 43% fewer tool calls. Each lookup cost 18% less overall, and 6–28% less in each of four repos from 504 to 34,847 files. The benchmark scripts are open source, so you can run them on your own code."
    }
   },
   {
@@ -99,7 +99,7 @@
    "name": "How do I get my agent to use Pensieve instead of grep?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Agents grep by habit. The install prompt runs pensieve integrate recommended, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, agents searched with Pensieve in 82% of lookups in our benchmark; without it, 26%."
+    "text": "Agents grep by habit. The install prompt runs pensieve integrate recommended, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, the agent used Pensieve in all 144 runs of our latest benchmark."
    }
   },
   {
@@ -698,7 +698,7 @@ footer a{color:var(--ink-2)}
         <div class="meter"><div class="lbl"><span>Tool calls</span><b>1 search · 1 read</b></div><div class="track"><i style="width:6%;background:#30d158"></i></div></div>
       </div>
     </div>
-    <p class="illus">Illustrative example. In the benchmark below, agents with Pensieve averaged 3.2 tool calls per lookup against 3.6 with grep.</p>
+    <p class="illus">Illustrative example. In the benchmark below, agents with Pensieve averaged 2.0 tool calls per lookup against 3.4 with grep, and answered after a single call in 82 of 144 runs.</p>
     <div class="term rv" role="img" aria-label="Terminal: pensieve integrate recommended connects Claude Code, Codex and Cursor">
       <div class="chrome"><i></i><i></i><i></i></div>
 <pre><span class="c">~</span> <span class="p">$</span> <span class="w">pensieve integrate recommended</span>
@@ -724,13 +724,13 @@ Agents load MCP servers when they start: restart any that are open to give them 
     <div class="head rv">
       <div class="kicker">Measured, not promised</div>
       <h2>Fewer searches. Right file first.</h2>
-      <p>We gave Claude Code the same code-finding tasks with and without Pensieve: held-out tasks across real repos from 500 to 33,000 files, asked five ways, from plain descriptions to exact names and error messages. It solves more of them, with fewer tool calls, and costs less per lookup in every repo from 1,500 files up.</p>
+      <p>We gave Claude Code the same code-finding tasks with and without Pensieve: held-out tasks across real repos from 500 to 35,000 files, asked five ways, from plain descriptions to exact names and error messages. With Pensieve it finds more of them, with fewer tool calls, and costs less per lookup in every repo. Each search takes 0.1 to 0.2 seconds.</p>
     </div>
     <div class="stats rv">
-      <div class="stat"><b>66 / 72</b><span>tasks solved with Pensieve, against 62 / 72 with grep alone</span></div>
-      <div class="stat"><b>9% cheaper</b><span>per lookup across all 72 tasks: $0.073 instead of $0.080</span></div>
-      <div class="stat"><b>9–11% cheaper</b><span>in every repo from 1,500 to 33,000 files</span></div>
-      <div class="stat"><b>10% fewer</b><span>tool calls per lookup: 3.2 instead of 3.6</span></div>
+      <div class="stat"><b>131 / 144</b><span>runs that found the right file with Pensieve, against 123 / 144 with grep alone</span></div>
+      <div class="stat"><b>43% fewer</b><span>tool calls per lookup: 2.0 instead of 3.4</span></div>
+      <div class="stat"><b>18% cheaper</b><span>per lookup: $0.041 instead of $0.050, and cheaper in all four repos</span></div>
+      <div class="stat"><b>21% faster</b><span>per lookup: 8.6 seconds instead of 10.9</span></div>
     </div>
     <div class="bench">
       <div class="chart rv">
@@ -741,12 +741,12 @@ Agents load MCP servers when they start: restart any that are open to give them 
       </div>
       <div class="chart rv">
         <h3>Agent cost per code lookup</h3>
-        <p class="sub">Claude Sonnet in Claude Code, measured in four real repos. Below 1,000 files, grep is a little cheaper.</p>
-        <svg id="ch-cost" viewBox="0 0 440 250" role="img" aria-label="Bar chart: agent cost per lookup in four repos, grep versus Pensieve. Pensieve costs 5% more in a 483-file repo and 9 to 11% less in repos of 1,539, 2,104 and 33,131 files."></svg>
+        <p class="sub">Claude Sonnet in Claude Code, measured in four real repos. Pensieve costs less in every repo, and saves the most in the biggest one.</p>
+        <svg id="ch-cost" viewBox="0 0 440 250" role="img" aria-label="Bar chart: agent cost per lookup in four repos, grep versus Pensieve. Pensieve costs 15% less in a 504-file repo, 6% less at 1,783 files, 14% less at 2,383 files and 28% less at 34,847 files."></svg>
         <div class="legend"><span><i style="background:#8e8e93"></i>Grep, Glob and Read</span><span><i style="background:var(--blue)"></i>With Pensieve</span></div>
       </div>
     </div>
-    <p class="method rv">Method: Claude Sonnet run headless through Claude Code, one run per task and setup; tasks are generated from the code and graded on the file found. “With Pensieve” is the default agent tool set plus the instructions block from <code>pensieve integrate</code>, measured with Pensieve 0.4.4, whose result format the current version keeps; the grep runs use the same 72 held-out tasks across four repos (483, 1,539, 2,104 and 33,131 files). Costs are Claude Code’s reported API costs at list prices. Token use was about the same (6% more with Pensieve), and so was the time per lookup. The “right file, first result” chart was measured with the search ranker from before 0.4.3. The benchmark scripts are open source in <a href="https://github.com/TedHaley/pensieve/tree/main/bench">bench/</a>; run them on your own repos.</p>
+    <p class="method rv">Method: Claude Sonnet run headless through Claude Code. Tasks are generated from the code and graded on the file found. “With Pensieve” is the default agent tool set plus the instructions block from <code>pensieve integrate</code>, measured with Pensieve 0.5.6. Both setups ran the same 72 held-out tasks across four repos (504, 1,783, 2,383 and 34,847 files), twice each, in one batch, because the cost depends on Claude’s prompt cache at the time. These tasks were never used to tune Pensieve. Costs are Claude Code’s reported API costs at list prices. Pensieve used 16% fewer tokens. The “right file, first result” chart uses the same held-out tasks: a single grep wins on exact error messages, and Pensieve wins on everything else. The benchmark scripts are open source in <a href="https://github.com/TedHaley/pensieve/tree/main/bench">bench/</a>; run them on your own repos.</p>
   </div>
 </section>
 
@@ -864,7 +864,7 @@ Agents load MCP servers when they start: restart any that are open to give them 
         <li><i>2</i><b>Your agent installs it</b>The app, then Pensieve for every agent on your Mac.</li>
         <li><i>3</i><b>Press Control and Shift</b>Search while your files, repos and sessions are indexed.</li>
       </ol>
-      <div class="fine" style="margin-top:22px">Version 0.5.5 · Apple Silicon · macOS 14 or later</div>
+      <div class="fine" style="margin-top:22px">Version 0.5.6 · Apple Silicon · macOS 14 or later</div>
     </div>
   </div>
 </section>
@@ -874,9 +874,9 @@ Agents load MCP servers when they start: restart any that are open to give them 
     <div class="head rv"><h2>Questions.</h2></div>
     <div class="faq">
       <details><summary>What does Pensieve search?</summary><p>Your files and folders (Documents, Desktop, Downloads and any folder you add), your git repositories including uncommitted changes and worktrees, and your Claude Code, Codex and Qwen Code sessions. Obsidian vaults too, and optionally Apple Notes. Everything is indexed and searched on your Mac.</p></details>
-      <details><summary>How does Pensieve help my agent?</summary><p>Without it, a coding agent often greps the repo and reads many whole files to find what matters, and every file it reads costs tokens. With Pensieve connected over MCP, the agent asks one question and gets back the most relevant passages with their file and line, so it starts on the right code in fewer tool calls. In our benchmark that made each lookup about 9% cheaper overall; see the measured results above.</p></details>
-      <details><summary>Does Pensieve make Claude Code cheaper?</summary><p>In our benchmark, Claude Code with Pensieve solved 66 of 72 code-finding tasks against 62 with grep alone, with 10% fewer tool calls. Each lookup cost 9–11% less in repos from 1,500 to 33,000 files, and 5% more in a 483-file repo. The benchmark scripts are open source, so you can run them on your own code.</p></details>
-      <details><summary>How do I get my agent to use Pensieve instead of grep?</summary><p>Agents grep by habit. The install prompt runs <code>pensieve integrate recommended</code>, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, agents searched with Pensieve in 82% of lookups in our benchmark; without it, 26%.</p></details>
+      <details><summary>How does Pensieve help my agent?</summary><p>Without it, a coding agent often greps the repo and reads many whole files to find what matters, and every file it reads costs tokens. With Pensieve connected over MCP, the agent asks one question and gets back the most relevant passages with their file and line, so it starts on the right code in fewer tool calls. In our benchmark that made each lookup 18% cheaper and 21% faster; see the measured results above.</p></details>
+      <details><summary>Does Pensieve make Claude Code cheaper?</summary><p>In our benchmark, Claude Code with Pensieve found the right file in 131 of 144 runs, against 123 with grep alone, with 43% fewer tool calls. Each lookup cost 18% less overall, and 6–28% less in each of four repos from 504 to 34,847 files. The benchmark scripts are open source, so you can run them on your own code.</p></details>
+      <details><summary>How do I get my agent to use Pensieve instead of grep?</summary><p>Agents grep by habit. The install prompt runs <code>pensieve integrate recommended</code>, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, the agent used Pensieve in all 144 runs of our latest benchmark.</p></details>
       <details><summary>Which agents work with Pensieve?</summary><p>Any MCP client. <code>pensieve integrate recommended</code> connects Claude Code, Codex, Cursor, Gemini CLI, Windsurf, Claude Desktop and VS Code for you. Other agents can use <code>pensieve mcp</code> over stdio, or HTTP. Optional skills also suggest which teammates know an area and help plan new code around what already exists.</p></details>
       <details><summary>How does it find knowledge gaps?</summary><p>Pensieve reads git blame and recent commit history for each area of a repo. Areas where most lines were written by people with no recent commits there are flagged, along with how many active people know the area and who among them knows it best.</p></details>
       <details><summary>Does anything leave my Mac?</summary><p>Your files, code and sessions don't. Indexing and search run on your Mac. Pensieve only downloads its models and checks GitHub for updates, which you can turn off. The exception is if you choose Claude Code or Codex to write optional AI insights; those are labelled Cloud. The built-in model, a local server like LM Studio, or no AI at all keep everything local.</p></details>
@@ -935,8 +935,8 @@ document.querySelectorAll('.rv').forEach(el => io ? io.observe(el) : el.classLis
 
 // measured: charts and savings calculator (data from bench/out/agent_summary.json)
 (() => {
-  // costs: mean per lookup, grep arm vs Pensieve 0.4.4 ("guided"), from bench/out/<repo>/runs-sonnet-v{2,4}.jsonl
-  const D = {"retrieval": {"grep": {"query": 0, "desc": 0, "mixed": 0, "ident": 0.54, "literal": 0.92}, "pensieve": {"query": 0.49, "desc": 0.67, "mixed": 0.72, "ident": 0.92, "literal": 0.96}}, "points": [{"name": "Small app", "files": 483, "grep": 0.0429, "pensieve": 0.0452}, {"name": "Data pipelines", "files": 1539, "grep": 0.0968, "pensieve": 0.0875}, {"name": "Infrastructure", "files": 2104, "grep": 0.0432, "pensieve": 0.0393}, {"name": "Web monorepo", "files": 33131, "grep": 0.1047, "pensieve": 0.0937}]};
+  // costs: mean per lookup, grep arm vs Pensieve 0.5.6 ("guided"), from bench/out/<repo>/runs-sonnet-v5test.jsonl
+  const D = {"retrieval": {"grep": {"query": 0, "desc": 0, "mixed": 0, "ident": 0.54, "literal": 0.92}, "pensieve": {"query": 0.46, "desc": 0.58, "mixed": 0.74, "ident": 0.94, "literal": 0.88}}, "points": [{"name": "Small app", "files": 504, "grep": 0.02926, "pensieve": 0.02478}, {"name": "Data pipelines", "files": 1783, "grep": 0.05543, "pensieve": 0.05198}, {"name": "Infrastructure", "files": 2383, "grep": 0.02862, "pensieve": 0.02474}, {"name": "Web monorepo", "files": 34847, "grep": 0.06771, "pensieve": 0.04905}]};
   const NS = 'http://www.w3.org/2000/svg', css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const el = (p, tag, at, text) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); if (text != null) e.textContent = text; p.appendChild(e); return e; };
   const blue = css('--blue') || '#0071e3', grey = '#8e8e93';
@@ -958,8 +958,8 @@ document.querySelectorAll('.rv').forEach(el => io ? io.observe(el) : el.classLis
   // 2. cost per lookup in each measured repo
   const c = document.getElementById('ch-cost');
   if (c) {
-    const L = 48, R = 430, T = 14, B = 200, ymax = 0.12, Y = v => B - v / ymax * (B - T), slot = (R - L) / D.points.length;
-    for (const v of [0, .04, .08, .12]) { el(c, 'line', {x1: L, x2: R, y1: Y(v), y2: Y(v), class: 'axis'}); el(c, 'text', {x: L - 8, y: Y(v) + 4, 'text-anchor': 'end'}, '$' + v.toFixed(2)); }
+    const L = 48, R = 430, T = 14, B = 200, ymax = 0.08, Y = v => B - v / ymax * (B - T), slot = (R - L) / D.points.length;
+    for (const v of [0, .02, .04, .06, .08]) { el(c, 'line', {x1: L, x2: R, y1: Y(v), y2: Y(v), class: 'axis'}); el(c, 'text', {x: L - 8, y: Y(v) + 4, 'text-anchor': 'end'}, '$' + v.toFixed(2)); }
     D.points.forEach((p, i) => {
       const x = L + i * slot + slot / 2, bw = 26, pct = Math.round((p.grep - p.pensieve) / p.grep * 100);
       [[p.grep, grey, -bw - 2], [p.pensieve, blue, 2]].forEach(([v, col, dx]) => el(c, 'rect', {x: x + dx, y: Y(v), width: bw, height: B - Y(v), rx: 4, fill: col}));
