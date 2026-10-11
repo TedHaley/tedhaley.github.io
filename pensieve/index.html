@@ -32,7 +32,7 @@
  "name": "Pensieve",
  "applicationCategory": "DeveloperApplication",
  "operatingSystem": "macOS 14 or later (Apple Silicon)",
- "softwareVersion": "0.5.8",
+ "softwareVersion": "0.5.9",
  "description": "Local search across your files, git repositories and AI agent sessions, by meaning or exact words. An MCP server that helps coding agents find the right code in fewer tool calls: in benchmarks, more tasks solved with 43% fewer tool calls and 18% lower cost per lookup than grep. Code ownership from git blame, and knowledge gaps where the people who wrote the code are no longer active.",
  "featureList": [
   "Local semantic and exact search over files, folders, git repositories and AI agent sessions",
@@ -508,7 +508,8 @@ footer a{color:var(--ink-2)}
 .getcard>p{color:var(--ink-2);font-size:16px;margin:0 0 22px}
 .getcard .prompt{font:14.5px/1.6 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:0;padding:18px 20px;border-radius:16px;box-shadow:inset 0 0 0 1px var(--line);margin-bottom:16px}
 .getcard .copy{font-size:15px;padding:11px 22px}
-.steps{list-style:none;margin:30px 0 0;padding:24px 0 0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.steps{list-style:none;margin:30px 0 0;padding:24px 0 0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media (max-width:860px){.steps{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:640px){.steps{grid-template-columns:1fr}}
 .steps li{font-size:14px;color:var(--ink-2);line-height:1.4}
 .steps li b{display:block;color:var(--ink);font-size:15px;margin-bottom:2px}
@@ -778,7 +779,7 @@ Agents load MCP servers when they start: restart any that are open to give them 
       <p>Indexing and search run locally. You decide what gets indexed, and AI is entirely optional.</p>
     </div>
     <div class="tiles three">
-      <div class="tile rv"><h3>Runs locally</h3><p>An on-device embedding model and a local index in <code>~/.pensieve</code>. No account, no cloud service.</p></div>
+      <div class="tile rv"><h3>Runs locally</h3><p>An on-device embedding model and a local index in <code>~/.pensieve</code>. Its server answers only this Mac, not your network or other websites. No account, no cloud service.</p></div>
       <div class="tile rv"><h3>Switch any source off</h3><p>Agents, folders, repos and apps each have a switch. Turning one off removes what it indexed.</p></div>
       <div class="tile rv"><h3>Secrets skipped</h3><p>Password-manager exports, keys, <code>.env</code> files and credentials are never indexed.</p></div>
       <div class="tile rv span"><h3>AI if you want it</h3><p>Summaries and insights are optional. Pick who writes them, or leave it off:</p>
@@ -802,15 +803,16 @@ Agents load MCP servers when they start: restart any that are open to give them 
     <div class="getcard rv">
       <span class="fill"></span>
       <h3>Ask your coding agent.</h3>
-      <p>Paste this into Claude Code, Codex, Cursor, Gemini CLI, Windsurf or VS Code.</p>
-      <div class="prompt" id="cmd-agent">Install Pensieve on my Mac by running sh -c "$(curl -fsSL https://tedhaley.ca/pensieve/install.sh)", then run pensieve integrate recommended. Open the Pensieve app and tell me when it's ready.</div>
+      <p>Paste this into Claude Code, Codex, Cursor, Gemini CLI, Qwen Code, Windsurf or VS Code.</p>
+      <div class="prompt" id="cmd-agent">Install Pensieve on my Mac by running sh -c "$(curl -fsSL https://tedhaley.ca/pensieve/install.sh)", then run pensieve integrate recommended. Then run pensieve setup, show me what it found, ask me which sources to index, and run pensieve setup with my choices. Open the Pensieve app and tell me when it's ready.</div>
       <button class="copy" data-copy-from="cmd-agent" aria-label="Copy the agent prompt">Copy prompt</button>
       <ol class="steps">
         <li><i>1</i><b>Paste the prompt</b>Into whichever coding agent you use.</li>
         <li><i>2</i><b>Your agent installs it</b>The app, then Pensieve for every agent on your Mac.</li>
-        <li><i>3</i><b>Press Control and Shift</b>Search while your files, repos and sessions are indexed.</li>
+        <li><i>3</i><b>Choose what to index</b>Your agent asks. Nothing is indexed until you choose.</li>
+        <li><i>4</i><b>Press Control and Shift</b>Search while indexing runs. It uses a lot of energy, so plug in.</li>
       </ol>
-      <div class="fine" style="margin-top:22px">Version 0.5.8 · Apple Silicon · macOS 14 or later</div>
+      <div class="fine" style="margin-top:22px">Version 0.5.9 · Apple Silicon · macOS 14 or later</div>
     </div>
   </div>
 </section>
