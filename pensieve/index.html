@@ -32,7 +32,7 @@
  "name": "Pensieve",
  "applicationCategory": "DeveloperApplication",
  "operatingSystem": "macOS 14 or later (Apple Silicon)",
- "softwareVersion": "0.4.8",
+ "softwareVersion": "0.5.4",
  "description": "Local search across your files, git repositories and AI agent sessions, by meaning or exact words. An MCP server that helps coding agents find the right code in fewer tool calls: in benchmarks, more tasks solved with 40% fewer tool calls and 9–21% lower cost per lookup. Code ownership from git blame, and knowledge gaps where the people who wrote the code are no longer active.",
  "featureList": [
   "Local semantic and exact search over files, folders, git repositories and AI agent sessions",
@@ -42,11 +42,11 @@
   "Knowledge gaps: code mostly written by people no longer active in the repo",
   "Live indexing of uncommitted changes and git worktrees",
   "Runs entirely on your Mac; AI insights optional",
+  "One command connects every agent on your Mac: Claude Code, Codex, Cursor, Gemini CLI, Windsurf, Claude Desktop and VS Code",
   "Agent add-ons: a 'search before you grep' instructions block and Claude Code skills, including teammate and planning skills",
   "Open-source benchmark comparing agents with and without Pensieve"
  ],
  "url": "https://tedhaley.ca/pensieve/",
- "downloadUrl": "https://github.com/TedHaley/pensieve/releases/latest/download/Pensieve.dmg",
  "installUrl": "https://tedhaley.ca/pensieve/install.sh",
  "codeRepository": "https://github.com/TedHaley/pensieve",
  "license": "https://opensource.org/licenses/MIT",
@@ -99,7 +99,7 @@
    "name": "How do I get my agent to use Pensieve instead of grep?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Agents grep by habit. Run pensieve integrate recommended (or switch it on in Settings → Search & Agents) to add a short “search before you grep” section to ~/.claude/CLAUDE.md and a search skill. With it, agents searched with Pensieve in 83% of lookups in our benchmark; without it, 26%."
+    "text": "Agents grep by habit. The install prompt runs pensieve integrate recommended, which adds a short “search before you grep” section to each agent's instructions file and a search skill for Claude Code. You can also switch these on in Settings → Search & Agents. With it, agents searched with Pensieve in 83% of lookups in our benchmark; without it, 26%."
    }
   },
   {
@@ -107,7 +107,7 @@
    "name": "Which agents work with Pensieve?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Any MCP client: Claude Code, Codex, Cursor, Claude Desktop and others, over stdio with pensieve mcp or over HTTP. Optional skills also suggest which teammates know an area and help plan new code around what already exists."
+    "text": "Any MCP client. pensieve integrate recommended connects Claude Code, Codex, Cursor, Gemini CLI, Windsurf, Claude Desktop and VS Code for you. Other agents can use pensieve mcp over stdio, or HTTP. Optional skills also suggest which teammates know an area and help plan new code around what already exists."
    }
   },
   {
@@ -147,7 +147,7 @@
    "name": "Why does macOS ask before opening it?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "The app isn't notarized yet. The first time, open System Settings → Privacy & Security and click Open Anyway. You only do this once."
+    "text": "The app isn't notarized yet. If macOS blocks it, open System Settings → Privacy & Security and click Open Anyway. You only do this once."
    }
   },
   {
@@ -155,7 +155,7 @@
    "name": "Does it work on Intel Macs or Linux?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "The app needs Apple Silicon. The backend and the browser visualizer also run on Linux and Intel Macs through the Terminal install, without the search panel."
+    "text": "The app needs Apple Silicon. On Linux and Intel Macs, the same prompt installs the backend and the browser visualizer, without the search panel."
    }
   },
   {
@@ -163,7 +163,7 @@
    "name": "How do I uninstall it?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Quit Pensieve, drag it to the Trash, and delete ~/.pensieve. If you used the Terminal install, also run uv tool uninstall pensieve."
+    "text": "Quit Pensieve, drag it to the Trash, and delete ~/.pensieve, ~/.local/share/uv/tools/pensieve and ~/.local/bin/pensieve."
    }
   }
  ]
@@ -464,7 +464,7 @@ footer a{color:var(--ink-2)}
   <div class="wide">
     <a class="brand" href="/pensieve/"><svg aria-hidden="true"><use href="#mark"/></svg>Pensieve</a>
     <div class="links"><a href="#search">Search</a><a href="#agents">Agents</a><a href="#measured">Results</a><a href="#owners">Owners</a><a href="#gaps">Gaps</a><a href="#privacy">Privacy</a><a href="#faq">FAQ</a><a href="https://github.com/TedHaley/pensieve">GitHub</a></div>
-    <a class="pill" href="#get">Download</a>
+    <a class="pill" href="#get">Install</a>
   </div>
 </nav>
 
@@ -475,9 +475,8 @@ footer a{color:var(--ink-2)}
     <h1>Supercharges you and your agents</h1>
     <p class="sub">Search your files, repos and agent sessions, locally, and give your agents the best context for the job. One search points them to the few passages that matter, instead of grepping the whole disk. Less time, fewer tokens.</p>
     <div class="cta">
-      <a class="btn" href="https://github.com/TedHaley/pensieve/releases/latest/download/Pensieve.dmg"><svg aria-hidden="true"><use href="#apple"/></svg>Download for Mac</a>
+      <a class="btn" href="#get"><svg aria-hidden="true"><use href="#apple"/></svg>Install with your agent</a>
       <div class="fine">Apple Silicon · macOS 14 or later · free and open source</div>
-      <div class="morelinks"><a href="#get">Install with Terminal</a><a href="#get">Ask your coding agent to install it</a></div>
     </div>
   </div>
   <div class="stage" aria-hidden="true">
@@ -575,7 +574,7 @@ footer a{color:var(--ink-2)}
     <div class="tiles">
       <div class="tile rv"><h3>Scoped to the job</h3><p>An agent started in a repo sees that repo, its worktrees and its sessions. Name a scope to give it a few repos and a folder of specs.</p></div>
       <div class="tile rv"><h3>Exact or by meaning</h3><p>Agents use the same search you do: by meaning, by the exact identifier, or both, across code, docs and past sessions.</p></div>
-      <div class="tile rv"><h3>Works with your agent</h3><p>Claude Code, Codex, or any MCP client, over stdio with <code>pensieve mcp</code> or over HTTP. <code>pensieve integrate</code> adds a “search before you grep” block and skills, including optional ones that point you to teammates who know the code.</p></div>
+      <div class="tile rv"><h3>Works with your agent</h3><p>Claude Code, Codex, Cursor or any MCP client, over stdio with <code>pensieve mcp</code> or over HTTP. <code>pensieve integrate</code> connects the agents on your Mac and adds a “search before you grep” block and skills, including optional ones that point you to teammates who know the code.</p></div>
     </div>
   </div>
 </section>
@@ -722,22 +721,13 @@ footer a{color:var(--ink-2)}
       <h2>Get Pensieve.</h2>
       <p>Free and open source. Set up in a minute.</p>
     </div>
-    <div class="get">
+    <div class="get" style="grid-template-columns:minmax(0,640px);justify-content:center">
       <div class="card rv">
-        <h3>Download for Mac</h3>
-        <p>Drag Pensieve to Applications and open it. It sets itself up on first launch.</p>
-        <a class="btn" href="https://github.com/TedHaley/pensieve/releases/latest/download/Pensieve.dmg"><svg aria-hidden="true"><use href="#apple"/></svg>Download Pensieve.dmg</a>
-        <div class="fine">Version 0.2.0 · Apple Silicon · macOS 14 or later</div>
-        <div class="note"><svg aria-hidden="true"><use href="#info"/></svg><div><b>First launch.</b> Pensieve isn't notarized yet, so macOS asks once: open <b>System Settings → Privacy &amp; Security</b> and click <b>Open Anyway</b>. The first launch then downloads its search engine (about 1 GB).</div></div>
-      </div>
-      <div class="card rv">
-        <h3>Install with Terminal</h3>
-        <p>Builds the app and adds the <code>pensieve</code> command for agents. Needs the Xcode command-line tools.</p>
-        <div class="cmd"><code id="cmd-install">curl -fsSL https://tedhaley.ca/pensieve/install.sh | sh</code><button class="copy" data-copy-from="cmd-install" aria-label="Copy the install command">Copy</button></div>
-        <h4>Or ask your coding agent</h4>
-        <p>Paste this into Claude Code or Codex:</p>
-        <div class="prompt" id="cmd-agent">Install Pensieve on my Mac by running PENSIEVE_NO_START=1 sh -c "$(curl -fsSL https://tedhaley.ca/pensieve/install.sh)". Then connect it to yourself with: claude mcp add pensieve -- pensieve mcp, and run pensieve integrate recommended so you search with it before grepping. Open the Pensieve app and tell me when it's ready. If the Xcode command-line tools are missing, tell me to run xcode-select --install first.</div>
+        <h3>Ask your coding agent</h3>
+        <p>Paste this into Claude Code, Codex, Cursor, Gemini CLI, Windsurf or VS Code. Your agent installs the app, then connects Pensieve to every agent on your Mac.</p>
+        <div class="prompt" id="cmd-agent">Install Pensieve on my Mac by running sh -c "$(curl -fsSL https://tedhaley.ca/pensieve/install.sh)", then run pensieve integrate recommended. Open the Pensieve app and tell me when it's ready.</div>
         <button class="copy" data-copy-from="cmd-agent" aria-label="Copy the agent prompt">Copy prompt</button>
+        <div class="fine" style="margin-top:12px">Version 0.5.4 · Apple Silicon · macOS 14 or later</div>
       </div>
     </div>
   </div>
@@ -750,15 +740,15 @@ footer a{color:var(--ink-2)}
       <details><summary>What does Pensieve search?</summary><p>Your files and folders (Documents, Desktop, Downloads and any folder you add), your git repositories including uncommitted changes and worktrees, and your Claude Code, Codex and Qwen Code sessions. Optionally Obsidian and Apple Notes too. Everything is indexed and searched on your Mac.</p></details>
       <details><summary>How does Pensieve save tokens?</summary><p>Without it, a coding agent often greps the repo and reads many whole files to find what matters, and every file it reads costs tokens. With Pensieve connected over MCP, the agent asks one question and gets back the few most relevant passages with their file and line, so it reads less and starts on the right code. How much you save depends on the question and the repo; see the measured results above.</p></details>
       <details><summary>Does Pensieve make Claude Code cheaper?</summary><p>In our benchmark, Claude Code with Pensieve solved 66 of 72 code-finding tasks against 62 with grep alone, with 40% fewer tool calls. Each lookup cost 9–10% less in 1,500–2,100-file repos and 21% less in a 33,000-file monorepo. Savings grow with repo size; the benchmark is open source so you can run it on your own code.</p></details>
-      <details><summary>How do I get my agent to use Pensieve instead of grep?</summary><p>Agents grep by habit. Run <code>pensieve integrate recommended</code> (or switch it on in Settings → Search &amp; Agents) to add a short “search before you grep” section to <code>~/.claude/CLAUDE.md</code> and a search skill. With it, agents searched with Pensieve in 83% of lookups in our benchmark; without it, 26%.</p></details>
-      <details><summary>Which agents work with Pensieve?</summary><p>Any MCP client: Claude Code, Codex, Cursor, Claude Desktop and others, over stdio with <code>pensieve mcp</code> or over HTTP. Optional skills also suggest which teammates know an area and help plan new code around what already exists.</p></details>
+      <details><summary>How do I get my agent to use Pensieve instead of grep?</summary><p>Agents grep by habit. The install prompt runs <code>pensieve integrate recommended</code>, which adds a short “search before you grep” section to each agent's instructions file and a search skill for Claude Code. You can also switch these on in Settings → Search &amp; Agents. With it, agents searched with Pensieve in 83% of lookups in our benchmark; without it, 26%.</p></details>
+      <details><summary>Which agents work with Pensieve?</summary><p>Any MCP client. <code>pensieve integrate recommended</code> connects Claude Code, Codex, Cursor, Gemini CLI, Windsurf, Claude Desktop and VS Code for you. Other agents can use <code>pensieve mcp</code> over stdio, or HTTP. Optional skills also suggest which teammates know an area and help plan new code around what already exists.</p></details>
       <details><summary>How does it find knowledge gaps?</summary><p>Pensieve reads git blame and recent commit history for each area of a repo. Areas where most lines were written by people with no recent commits there are flagged, along with how many active people know the area and who among them knows it best.</p></details>
       <details><summary>Does anything leave my Mac?</summary><p>No. Indexing and search run on your Mac. The only exception is if you choose Claude Code or Codex to write optional AI insights; those are labelled Cloud. The built-in model, a local server like LM Studio, or no AI at all keep everything local.</p></details>
       <details><summary>Do I need an AI model?</summary><p>No. Search, agent context, ownership and knowledge gaps all work without one. AI insights are optional: choose the built-in Qwen 3.5 9B, LM Studio, Claude Code, Codex, or leave it off.</p></details>
       <details><summary>Is Pensieve free?</summary><p>Yes. It's free and open source under the MIT license. The code is on <a href="https://github.com/TedHaley/pensieve">GitHub</a>.</p></details>
-      <details><summary>Why does macOS ask before opening it?</summary><p>The app isn't notarized yet. The first time, open System Settings → Privacy &amp; Security and click Open Anyway. You only do this once.</p></details>
-      <details><summary>Does it work on Intel Macs or Linux?</summary><p>The app needs Apple Silicon. The backend and the browser visualizer also run on Linux and Intel Macs through the Terminal install, without the search panel.</p></details>
-      <details><summary>How do I uninstall it?</summary><p>Quit Pensieve, drag it to the Trash, and delete <code>~/.pensieve</code>. If you used the Terminal install, also run <code>uv tool uninstall pensieve</code>.</p></details>
+      <details><summary>Why does macOS ask before opening it?</summary><p>The app isn't notarized yet. If macOS blocks it, open System Settings → Privacy &amp; Security and click Open Anyway. You only do this once.</p></details>
+      <details><summary>Does it work on Intel Macs or Linux?</summary><p>The app needs Apple Silicon. On Linux and Intel Macs, the same prompt installs the backend and the browser visualizer, without the search panel.</p></details>
+      <details><summary>How do I uninstall it?</summary><p>Quit Pensieve, drag it to the Trash, and delete <code>~/.pensieve</code>, <code>~/.local/share/uv/tools/pensieve</code> and <code>~/.local/bin/pensieve</code>.</p></details>
     </div>
   </div>
 </section>
