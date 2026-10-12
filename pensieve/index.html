@@ -394,6 +394,8 @@ footer a{color:var(--ink-2)}
 .calc .out span{display:block;font-size:14px;color:var(--ink-2);line-height:1.45;margin-top:6px}
 .calc .out .neg{color:var(--warn)}
 .method{font-size:13px;line-height:1.5;color:var(--ink-3);max-width:820px;margin:22px auto 0;text-align:center}
+ul.method{text-align:left;max-width:760px;padding-left:20px}
+ul.method li{margin:4px 0}
 .rv{opacity:0;transform:translateY(28px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
@@ -671,7 +673,7 @@ Agents load MCP servers when they start: restart any that are open to give them 
     <div class="head rv">
       <div class="kicker">Measured, not promised</div>
       <h2>Fewer searches. Right file first.</h2>
-      <p>We gave Claude Code the same code-finding tasks with and without Pensieve: held-out tasks across real repos from 500 to 35,000 files, asked five ways, from plain descriptions to exact names and error messages. With Pensieve it finds more of them, with fewer tool calls, and costs less per lookup in every repo. Each search takes 0.1 to 0.2 seconds.</p>
+      <p>We gave Claude Code the same code-finding tasks with and without Pensieve: held-out tasks across real repos from 500 to 35,000 files, asked five ways, from plain descriptions to exact names and error messages. With Pensieve it finds more of them, with fewer tool calls, and costs less per lookup in every repo. Over 1,000 test queries, a search takes 79 ms at the median.</p>
     </div>
     <div class="stats rv">
       <div class="stat"><b>131 / 144</b><span>runs that found the right file with Pensieve, against 123 / 144 with grep alone</span></div>
@@ -682,8 +684,8 @@ Agents load MCP servers when they start: restart any that are open to give them 
     <div class="bench">
       <div class="chart rv">
         <h3>Right file, first result</h3>
-        <p class="sub">One search, before any agent: how often the answer is the top result.</p>
-        <svg id="ch-first" viewBox="0 0 440 250" role="img" aria-label="Bar chart: share of tasks where the right file is the first result, grep versus Pensieve, by query style"></svg>
+        <p class="sub">One search, before any agent: how often the answer is the top result, over 1,000 test queries of four kinds.</p>
+        <svg id="ch-first" viewBox="0 0 440 200" role="img" aria-label="Bar chart: share of tasks where the right file is the first result, grep versus Pensieve, by query style"></svg>
         <div class="legend"><span><i style="background:#8e8e93"></i>One grep</span><span><i style="background:var(--blue)"></i>Pensieve search</span></div>
       </div>
       <div class="chart rv">
@@ -693,7 +695,14 @@ Agents load MCP servers when they start: restart any that are open to give them 
         <div class="legend"><span><i style="background:#8e8e93"></i>Grep, Glob and Read</span><span><i style="background:var(--blue)"></i>With Pensieve</span></div>
       </div>
     </div>
-    <p class="method rv">Method: Claude Sonnet run headless through Claude Code. Tasks are generated from the code and graded on the file found. “With Pensieve” is the default agent tool set plus the instructions block from <code>pensieve integrate</code>, measured with Pensieve 0.5.6. Both setups ran the same 72 held-out tasks across four repos (504, 1,783, 2,383 and 34,847 files), twice each, in one batch, because the cost depends on Claude’s prompt cache at the time. These tasks were never used to tune Pensieve. Costs are Claude Code’s reported API costs at list prices. Pensieve used 16% fewer tokens. The “right file, first result” chart uses the same held-out tasks: a single grep wins on exact error messages, and Pensieve wins on everything else. The benchmark scripts are open source in <a href="https://github.com/TedHaley/pensieve/tree/main/bench">bench/</a>; run them on your own repos.</p>
+    <p class="method rv">Method: Claude Sonnet run headless through Claude Code. Tasks are generated from the code and graded on the file found. “With Pensieve” is the default agent tool set plus the instructions block from <code>pensieve integrate</code>, measured with Pensieve 0.5.6. Both setups ran the same 72 held-out tasks across four repos (504, 1,783, 2,383 and 34,847 files), twice each, in one batch, because the cost depends on Claude’s prompt cache at the time. These tasks were never used to tune Pensieve. Costs are Claude Code’s reported API costs at list prices. Pensieve used 16% fewer tokens.</p>
+    <p class="method rv">The “right file, first result” chart and the search time come from a separate test: 1,000 queries over the same four repos (193,498 indexed passages), measured with Pensieve 0.6.3. The queries are a mixture of test cases:</p>
+    <ul class="method rv">
+      <li><b>334 short questions</b> in plain words, with no names from the code, for example “email sent once when free trial ends, skip sync-only users”. Pensieve puts the right file first for 44%, in the top 3 for 65% and in the top 10 for 80%.</li>
+      <li><b>333 exact queries:</b> 219 function or class names (91% first) and 114 error messages or other exact strings from the code (83% first, against 89% for one grep).</li>
+      <li><b>333 mixed queries:</b> one name plus a few plain words. Pensieve puts the right file first for 70% and in the top 3 for 94%.</li>
+    </ul>
+    <p class="method rv">Overall, the right file is first for 67% of the queries, in the top 3 for 84% and in the top 10 for 92%. One grep for the whole query finds it first for 22%, because grep cannot match plain words to code. Of the 1,000 queries, 371 come from tasks that we used to tune Pensieve, and the other 629 do not. Both groups get the same result (67% and 68% first). A search takes 79 ms at the median and 110 ms at the 95th percentile on an Apple M4 Max. The benchmark scripts are open source in <a href="https://github.com/TedHaley/pensieve/tree/main/bench">bench/</a>; run them on your own repos.</p>
   </div>
 </section>
 
@@ -884,14 +893,15 @@ document.querySelectorAll('.rv').forEach(el => io ? io.observe(el) : el.classLis
 // measured: charts and savings calculator (data from bench/out/agent_summary.json)
 (() => {
   // costs: mean per lookup, grep arm vs Pensieve 0.5.6 ("guided"), from bench/out/<repo>/runs-sonnet-v5test.jsonl
-  const D = {"retrieval": {"grep": {"query": 0, "desc": 0, "mixed": 0, "ident": 0.54, "literal": 0.92}, "pensieve": {"query": 0.46, "desc": 0.58, "mixed": 0.74, "ident": 0.94, "literal": 0.88}}, "points": [{"name": "Small app", "files": 504, "grep": 0.02926, "pensieve": 0.02478}, {"name": "Data pipelines", "files": 1783, "grep": 0.05543, "pensieve": 0.05198}, {"name": "Infrastructure", "files": 2383, "grep": 0.02862, "pensieve": 0.02474}, {"name": "Web monorepo", "files": 34847, "grep": 0.06771, "pensieve": 0.04905}]};
+  // retrieval: hit@1 by query style over bench/out/queries-1000.jsonl, Pensieve 0.6.3 vs one grep for the whole query
+  const D = {"retrieval": {"grep": {"query": 0, "mixed": 0, "ident": 0.521, "literal": 0.886}, "pensieve": {"query": 0.437, "mixed": 0.70, "ident": 0.913, "literal": 0.825}}, "points": [{"name": "Small app", "files": 504, "grep": 0.02926, "pensieve": 0.02478}, {"name": "Data pipelines", "files": 1783, "grep": 0.05543, "pensieve": 0.05198}, {"name": "Infrastructure", "files": 2383, "grep": 0.02862, "pensieve": 0.02474}, {"name": "Web monorepo", "files": 34847, "grep": 0.06771, "pensieve": 0.04905}]};
   const NS = 'http://www.w3.org/2000/svg', css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const el = (p, tag, at, text) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); if (text != null) e.textContent = text; p.appendChild(e); return e; };
   const blue = css('--blue') || '#0071e3', grey = '#8e8e93';
   // 1. right file first, by query style
   const f = document.getElementById('ch-first');
   if (f) {
-    const styles = [['literal', 'Error message'], ['ident', 'Function name'], ['mixed', 'Name + words'], ['desc', 'Description'], ['query', 'Short question']];
+    const styles = [['literal', 'Error message'], ['ident', 'Function name'], ['mixed', 'Name + words'], ['query', 'Short question']];
     const x0 = 112, w = 300, rowH = 46;
     styles.forEach(([k, label], i) => {
       const y = 10 + i * rowH;
