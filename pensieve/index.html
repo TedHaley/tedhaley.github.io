@@ -695,14 +695,15 @@ Agents load MCP servers when they start: restart any that are open to give them 
         <div class="legend"><span><i style="background:#8e8e93"></i>Grep, Glob and Read</span><span><i style="background:var(--blue)"></i>With Pensieve</span></div>
       </div>
     </div>
-    <p class="method rv">Method: Claude Sonnet run headless through Claude Code. Tasks are generated from the code and graded on the file found. “With Pensieve” is the default agent tool set plus the instructions block from <code>pensieve integrate</code>, measured with Pensieve 0.5.6. Both setups ran the same 72 held-out tasks across four repos (504, 1,783, 2,383 and 34,847 files), twice each, in one batch, because the cost depends on Claude’s prompt cache at the time. These tasks were never used to tune Pensieve. Costs are Claude Code’s reported API costs at list prices. Pensieve used 16% fewer tokens.</p>
-    <p class="method rv">The “right file, first result” chart and the search time come from a separate test: 1,000 queries over the same four repos (193,498 indexed passages), measured with Pensieve 0.6.3. The queries are a mixture of test cases:</p>
+    <p class="method rv"><b>How we measured.</b> We ran two tests in four real repos, from 500 to 35,000 files.</p>
+    <p class="method rv"><b>Test 1: Claude Code with and without Pensieve.</b> Claude Code had to find the right file for 72 tasks. It did each task twice with its normal tools (grep, glob and read), and twice with Pensieve added. With Pensieve, it found the right file more often, with fewer tool calls and at a lower cost. We did not use these tasks to tune Pensieve.</p>
+    <p class="method rv"><b>Test 2: one search, no agent.</b> We gave Pensieve 1,000 searches and checked if the right file came first. The searches were of three kinds:</p>
     <ul class="method rv">
-      <li><b>334 short questions</b> in plain words, with no names from the code, for example “email sent once when free trial ends, skip sync-only users”. Pensieve puts the right file first for 44%, in the top 3 for 65% and in the top 10 for 80%.</li>
-      <li><b>333 exact queries:</b> 219 function or class names (91% first) and 114 error messages or other exact strings from the code (83% first, against 89% for one grep).</li>
-      <li><b>333 mixed queries:</b> one name plus a few plain words. Pensieve puts the right file first for 70% and in the top 3 for 94%.</li>
+      <li><b>A question in plain words</b>, for example “email sent once when free trial ends”. The right file was first 44% of the time, and in the top 10 results 80% of the time.</li>
+      <li><b>An exact name or error message</b>, for example <code>batch_update</code>. The right file was first 88% of the time.</li>
+      <li><b>A name and a few words</b>, for example “pg_inherits check whether table is a partition”. The right file was first 70% of the time, and in the top 3 results 94% of the time.</li>
     </ul>
-    <p class="method rv">Overall, the right file is first for 67% of the queries, in the top 3 for 84% and in the top 10 for 92%. One grep for the whole query finds it first for 22%, because grep cannot match plain words to code. Of the 1,000 queries, 371 come from tasks that we used to tune Pensieve, and the other 629 do not. Both groups get the same result (67% and 68% first). A search takes 79 ms at the median and 110 ms at the 95th percentile on an Apple M4 Max. The benchmark scripts are open source in <a href="https://github.com/TedHaley/pensieve/tree/main/bench">bench/</a>; run them on your own repos.</p>
+    <p class="method rv">Grep finds only text that is in the code word for word. It cannot answer a question in plain words. Over all 1,000 searches, the right file was first 67% of the time with Pensieve, and 22% of the time with grep. One search takes about 80 ms. We measured with Pensieve 0.6.3 on an Apple M4 Max. The test scripts are in <a href="https://github.com/TedHaley/pensieve/tree/main/bench">bench/</a>, so you can run them on your own code.</p>
   </div>
 </section>
 
