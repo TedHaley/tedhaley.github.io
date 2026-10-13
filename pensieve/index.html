@@ -32,7 +32,6 @@
  "name": "Pensieve",
  "applicationCategory": "DeveloperApplication",
  "operatingSystem": "macOS 14 or later (Apple Silicon)",
- "softwareVersion": "0.5.9",
  "description": "Local search across your files, git repositories and AI agent sessions, by meaning or exact words. An MCP server that helps coding agents find the right code in fewer tool calls: in benchmarks, more tasks solved with 43% fewer tool calls and 18% lower cost per lookup than grep. Code ownership from git blame, and knowledge gaps where the people who wrote the code are no longer active.",
  "featureList": [
   "Local semantic and exact search over files, folders, git repositories and AI agent sessions",
@@ -99,7 +98,7 @@
    "name": "How do I get my agent to use Pensieve instead of grep?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Agents grep by habit. The install prompt runs pensieve integrate recommended, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, the agent used Pensieve in all 144 runs of our latest benchmark."
+    "text": "Agents grep by habit. The agent prompt runs pensieve integrate recommended, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, the agent used Pensieve in all 144 runs of our latest benchmark."
    }
   },
   {
@@ -155,7 +154,7 @@
    "name": "Does it work on Intel Macs or Linux?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "The app needs Apple Silicon. On Linux and Intel Macs, the same prompt installs the backend and the browser visualizer. An Intel Mac also gets the search panel if the Xcode command-line tools are installed."
+    "text": "The app needs Apple Silicon. On Linux and Intel Macs, the same install command installs the backend and the browser visualizer. An Intel Mac also gets the search panel if the Xcode command-line tools are installed."
    }
   },
   {
@@ -520,6 +519,7 @@ ul.method li{margin:4px 0}
 .getcard>p{color:var(--ink-2);font-size:16px;margin:0 0 22px}
 .getcard .prompt{font:14.5px/1.6 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:0;padding:18px 20px;border-radius:16px;box-shadow:inset 0 0 0 1px var(--line);margin-bottom:16px}
 .getcard .copy{font-size:15px;padding:11px 22px}
+.getcard h3.step2{margin-top:36px}
 .steps{list-style:none;margin:30px 0 0;padding:24px 0 0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 @media (max-width:860px){.steps{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:640px){.steps{grid-template-columns:1fr}}
@@ -680,7 +680,7 @@ Agents load MCP servers when they start: restart any that are open to give them 
       <div class="stat rv"><b>32% faster</b><span>9.1 seconds per answer instead of 13.4 with grep. 21–32% faster in each of three test batches.</span></div>
       <div class="stat rv"><b>17% more accurate</b><span>Found the right file 17% more often than grep: in 123 of 144 runs instead of 105. More accurate in each of three test batches.</span></div>
     </div>
-    <p class="illus">Claude Sonnet in Claude Code, Pensieve 0.6.4 with the recommended install, against Claude Code with grep only. 72 tasks in four real repos (504 to 34,847 files), each task twice per setup. <a href="https://github.com/TedHaley/pensieve/blob/main/bench/STRATEGIES.md">The method and every strategy we tried</a>.</p>
+    <p class="illus">Claude Sonnet in Claude Code, Pensieve with the recommended install, against Claude Code with grep only. 72 tasks in four real repos (504 to 34,847 files), each task twice per setup. <a href="https://github.com/TedHaley/pensieve/blob/main/bench/STRATEGIES.md">The method and every strategy we tried</a>.</p>
   </div>
 </section>
 
@@ -785,21 +785,25 @@ Agents load MCP servers when they start: restart any that are open to give them 
   <div class="wrap">
     <div class="head rv">
       <h2>Get Pensieve.</h2>
-      <p>Free and open source. Your coding agent does the setup.</p>
+      <p>Free and open source. One command installs it, and your coding agent does the rest.</p>
     </div>
     <div class="getcard rv">
       <span class="fill"></span>
-      <h3>Ask your coding agent.</h3>
+      <h3>1. Install the app.</h3>
+      <p>Run this in Terminal. It installs Pensieve and opens it.</p>
+      <div class="prompt" id="cmd-install">curl -fsSL https://tedhaley.ca/pensieve/install.sh | sh</div>
+      <button class="copy" data-copy-from="cmd-install" aria-label="Copy the install command">Copy command</button>
+      <h3 class="step2">2. Ask your coding agent to connect it.</h3>
       <p>Paste this into Claude Code, Codex, Cursor, Gemini CLI, Qwen Code, Windsurf or VS Code.</p>
-      <div class="prompt" id="cmd-agent">Install Pensieve on my Mac by running sh -c "$(curl -fsSL https://tedhaley.ca/pensieve/install.sh)", then run pensieve integrate recommended. Then run pensieve setup, show me what it found, ask me which sources to index, and run pensieve setup with my choices. Open the Pensieve app and tell me when it's ready.</div>
+      <div class="prompt" id="cmd-agent">Pensieve is installed on my Mac. Run pensieve integrate recommended to connect my coding agents. Then run pensieve setup, show me what it found and how long each source takes to index, ask me which sources to index, and run pensieve setup with my choices. Tell me how long indexing takes and how to search and open the map.</div>
       <button class="copy" data-copy-from="cmd-agent" aria-label="Copy the agent prompt">Copy prompt</button>
       <ol class="steps">
-        <li><i>1</i><b>Paste the prompt</b>Into whichever coding agent you use.</li>
-        <li><i>2</i><b>Your agent installs it</b>The app, then Pensieve for every agent on your Mac.</li>
-        <li><i>3</i><b>Choose what to index</b>Your agent asks. Nothing is indexed until you choose.</li>
-        <li><i>4</i><b>Press Control and Shift</b>Search while indexing runs. It uses a lot of energy, so plug in.</li>
+        <li><i>1</i><b>Run the command</b>It installs the app. You don't need git, Python or Xcode.</li>
+        <li><i>2</i><b>Paste the prompt</b>Your agent connects Pensieve to every agent on your Mac.</li>
+        <li><i>3</i><b>Choose what to index</b>Your agent asks, and tells you how long it takes. Indexing uses a lot of energy, so plug in.</li>
+        <li><i>4</i><b>Tap Control+Shift</b>Search from anywhere, also while it indexes. Choose Open Map in the menu bar to explore.</li>
       </ol>
-      <div class="fine" style="margin-top:22px">Version 0.5.9 · Apple Silicon · macOS 14 or later</div>
+      <div class="fine" style="margin-top:22px"><span id="relver"></span>Apple Silicon · macOS 14 or later · <a href="https://github.com/TedHaley/pensieve/releases/latest/download/Pensieve.dmg">Download the app</a> instead</div>
     </div>
   </div>
 </section>
@@ -840,16 +844,16 @@ Agents load MCP servers when they start: restart any that are open to give them 
       <li><b>An exact name or error message</b>, for example <code>batch_update</code>. The right file was first 88% of the time.</li>
       <li><b>A name and a few words</b>, for example “pg_inherits check whether table is a partition”. The right file was first 70% of the time, and in the top 3 results 94% of the time.</li>
     </ul>
-    <p class="method">Grep finds only text that is in the code word for word. It cannot answer a question in plain words. Over all 1,000 searches, the right file was first 67% of the time with Pensieve, and 22% of the time with grep. One search takes about 80 ms. We measured with Pensieve 0.6.3 on an Apple M4 Max. The test scripts are in <a href="https://github.com/TedHaley/pensieve/tree/main/bench">bench/</a>, so you can run them on your own code.</p>
+    <p class="method">Grep finds only text that is in the code word for word. It cannot answer a question in plain words. Over all 1,000 searches, the right file was first 67% of the time with Pensieve, and 22% of the time with grep. One search takes about 80 ms. We measured on an Apple M4 Max. The test scripts are in <a href="https://github.com/TedHaley/pensieve/tree/main/bench">bench/</a>, so you can run them on your own code.</p>
 </div></details>
-      <details><summary>How do I get my agent to use Pensieve instead of grep?</summary><p>Agents grep by habit. The install prompt runs <code>pensieve integrate recommended</code>, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, the agent used Pensieve in all 144 runs of our latest benchmark.</p></details>
+      <details><summary>How do I get my agent to use Pensieve instead of grep?</summary><p>Agents grep by habit. The agent prompt runs <code>pensieve integrate recommended</code>, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, the agent used Pensieve in all 144 runs of our latest benchmark.</p></details>
       <details><summary>Which agents work with Pensieve?</summary><p>Any MCP client. <code>pensieve integrate recommended</code> connects Claude Code, Codex, Cursor, Gemini CLI, Windsurf, Claude Desktop and VS Code for you. Other agents can use <code>pensieve mcp</code> over stdio, or HTTP. Optional skills also suggest which teammates know an area and help plan new code around what already exists.</p></details>
       <details><summary>How does it find knowledge gaps?</summary><p>Pensieve reads git blame and recent commit history for each area of a repo. Areas where most lines were written by people with no recent commits there are flagged, along with how many active people know the area and who among them knows it best.</p></details>
       <details><summary>Does anything leave my Mac?</summary><p>Your files, code and sessions don't. Indexing and search run on your Mac. Pensieve only downloads its models and checks GitHub for updates, which you can turn off. The exception is if you choose Claude Code or Codex to write optional AI insights; those are labelled Cloud. The built-in model, a local server like LM Studio, or no AI at all keep everything local.</p></details>
       <details><summary>Do I need an AI model?</summary><p>No. Search, agent context, ownership and knowledge gaps all work without one. AI insights are optional: choose the built-in Qwen 3.5 9B, LM Studio, Claude Code, Codex, or leave it off.</p></details>
       <details><summary>Is Pensieve free?</summary><p>Yes. It's free and open source under the MIT license. The code is on <a href="https://github.com/TedHaley/pensieve">GitHub</a>.</p></details>
       <details><summary>Why does macOS ask before opening it?</summary><p>The app isn't notarized yet. If macOS blocks it, open System Settings → Privacy &amp; Security and click Open Anyway. You only do this once.</p></details>
-      <details><summary>Does it work on Intel Macs or Linux?</summary><p>The app needs Apple Silicon. On Linux and Intel Macs, the same prompt installs the backend and the browser visualizer. An Intel Mac also gets the search panel if the Xcode command-line tools are installed.</p></details>
+      <details><summary>Does it work on Intel Macs or Linux?</summary><p>The app needs Apple Silicon. On Linux and Intel Macs, the same install command installs the backend and the browser visualizer. An Intel Mac also gets the search panel if the Xcode command-line tools are installed.</p></details>
       <details><summary>How do I uninstall it?</summary><p>First run <code>pensieve integrate all --remove</code> to disconnect your agents. Then quit Pensieve, drag it to the Trash, and delete <code>~/.pensieve</code>, <code>~/.local/share/uv/tools/pensieve</code> and <code>~/.local/bin/pensieve</code>. Its models are in <code>~/.cache/huggingface</code>.</p></details>
     </div>
   </div>
@@ -869,6 +873,10 @@ function legacyCopy(text) {
   const t = document.createElement('textarea'); t.value = text; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;opacity:0';
   document.body.appendChild(t); t.select(); let ok = false; try { ok = document.execCommand('copy'); } catch {} t.remove(); return ok;
 }
+// the version of the latest release, from GitHub: this page lives in another repo, so it cannot name it
+fetch('https://api.github.com/repos/TedHaley/pensieve/releases/latest').then(r => r.ok ? r.json() : null).then(j => {
+  if (j && j.tag_name) document.getElementById('relver').textContent = 'Version ' + j.tag_name.replace(/^v/, '') + ' · ';
+}).catch(() => {});
 document.querySelectorAll('.copy').forEach(b => b.addEventListener('click', async () => {
   const label = b.dataset.label || (b.dataset.label = b.textContent), text = document.getElementById(b.dataset.copyFrom).textContent.trim();
   let ok = false;
