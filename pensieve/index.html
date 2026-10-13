@@ -98,7 +98,7 @@
    "name": "How do I get my agent to use Pensieve instead of grep?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Agents grep by habit. The agent prompt runs pensieve integrate recommended, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, the agent used Pensieve in all 144 runs of our latest benchmark."
+    "text": "Agents grep by habit. The agent prompt runs pensieve integrate recommended, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, the agent used Pensieve in 144 and 143 of 144 runs, in the two benchmark batches that ran without our own Claude Code settings."
    }
   },
   {
@@ -676,9 +676,9 @@ Agents load MCP servers when they start: restart any that are open to give them 
       <div class="tile rv"><h3>Works with your agent</h3><p>Claude Code, Codex, Cursor or any MCP client, over stdio with <code>pensieve mcp</code> or over HTTP. <code>pensieve integrate</code> connects the agents on your Mac and adds a “search before you grep” block and skills, including optional ones that point you to teammates who know the code.</p></div>
     </div>
     <div class="stats newstats">
-      <div class="stat rv"><b>30% cheaper</b><span>$0.033 per answer instead of $0.047 with grep. 18–30% cheaper in each of three test batches.</span></div>
-      <div class="stat rv"><b>32% faster</b><span>9.1 seconds per answer instead of 13.4 with grep. 21–32% faster in each of three test batches.</span></div>
-      <div class="stat rv"><b>17% more accurate</b><span>Found the right file 17% more often than grep: in 123 of 144 runs instead of 105. More accurate in each of three test batches.</span></div>
+      <div class="stat rv"><b>30% cheaper</b><span>$0.033 per answer instead of $0.047 with grep. 18–31% cheaper in each of four test batches.</span></div>
+      <div class="stat rv"><b>32% faster</b><span>9.1 seconds per answer instead of 13.4 with grep. 21–32% faster in each of four test batches.</span></div>
+      <div class="stat rv"><b>17% more accurate</b><span>Found the right file 17% more often than grep: in 123 of 144 runs instead of 105. More accurate in each of four test batches.</span></div>
     </div>
     <p class="illus">Claude Sonnet in Claude Code, Pensieve with the recommended install, against Claude Code with grep only. 72 tasks in four real repos (504 to 34,847 files), each task twice per setup. <a href="https://github.com/TedHaley/pensieve/blob/main/bench/STRATEGIES.md">The method and every strategy we tried</a>.</p>
   </div>
@@ -846,7 +846,7 @@ Agents load MCP servers when they start: restart any that are open to give them 
     </ul>
     <p class="method">Grep finds only text that is in the code word for word. It cannot answer a question in plain words. Over all 1,000 searches, the right file was first 67% of the time with Pensieve, and 22% of the time with grep. One search takes about 80 ms. We measured on an Apple M4 Max. The test scripts are in <a href="https://github.com/TedHaley/pensieve/tree/main/bench">bench/</a>, so you can run them on your own code.</p>
 </div></details>
-      <details><summary>How do I get my agent to use Pensieve instead of grep?</summary><p>Agents grep by habit. The agent prompt runs <code>pensieve integrate recommended</code>, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, the agent used Pensieve in all 144 runs of our latest benchmark.</p></details>
+      <details><summary>How do I get my agent to use Pensieve instead of grep?</summary><p>Agents grep by habit. The agent prompt runs <code>pensieve integrate recommended</code>, which adds a short “search before you grep” section to the instructions files of Claude Code, Codex and Gemini CLI, plus a search skill and two hooks for Claude Code. You can also switch these on in Settings → Agents. With it, the agent used Pensieve in 144 and 143 of 144 runs, in the two benchmark batches that ran without our own Claude Code settings.</p></details>
       <details><summary>Which agents work with Pensieve?</summary><p>Any MCP client. <code>pensieve integrate recommended</code> connects Claude Code, Codex, Cursor, Gemini CLI, Windsurf, Claude Desktop and VS Code for you. Other agents can use <code>pensieve mcp</code> over stdio, or HTTP. Optional skills also suggest which teammates know an area and help plan new code around what already exists.</p></details>
       <details><summary>How does it find knowledge gaps?</summary><p>Pensieve reads git blame and recent commit history for each area of a repo. Areas where most lines were written by people with no recent commits there are flagged, along with how many active people know the area and who among them knows it best.</p></details>
       <details><summary>Does anything leave my Mac?</summary><p>Your files, code and sessions don't. Indexing and search run on your Mac. Pensieve only downloads its models and checks GitHub for updates, which you can turn off. The exception is if you choose Claude Code or Codex to write optional AI insights; those are labelled Cloud. The built-in model, a local server like LM Studio, or no AI at all keep everything local.</p></details>
